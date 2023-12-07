@@ -51,7 +51,7 @@ def HistogramEqualization(imagePath):
     width,height=img.shape
     # Flattning the image and converting it into a histogram
     histOrig, bins = np.histogram(img, 256, [0, 255])
-
+   
     cdf = histOrig.cumsum()  # Calculating the cumsum of pixels of the histogram
     
     cdf = np.round(cdf * 255 / (height *width))  # Histogram Equalization
