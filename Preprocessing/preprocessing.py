@@ -51,7 +51,7 @@ def HistogramEqualization(imagePath):
     width,height=img.shape
     # Flattning the image and converting it into a histogram
     histOrig, bins = np.histogram(img, 256, [0, 255])
-   
+
     cdf = histOrig.cumsum()  # Calculating the cumsum of pixels of the histogram
     
     cdf = np.round(cdf * 255 / (height *width))  # Histogram Equalization
@@ -94,12 +94,12 @@ def resize_image(input_path, output_path, new_size):
         print(f"Error processing image: {e}")
 
 # Example usage for image resizing
-input_image_path = "./preprocessing/image.jpeg"
-output_image_path = "./preprocessing/output.jpeg"
-new_size = (4320, 7680)
+# input_image_path = "./preprocessing/image.jpeg"
+# output_image_path = "./preprocessing/output.jpeg"
+# new_size = (4320, 7680)
 
-output = io.imread(output_image_path)
-ut.show_images(images=[output],titles=['Resized'])
+# output = io.imread(output_image_path)
+# ut.show_images(images=[output],titles=['Resized'])
 
-resize_image(input_image_path, output_image_path, new_size)
+# resize_image(input_image_path, output_image_path, new_size)
 
