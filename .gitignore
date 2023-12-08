@@ -4,5 +4,5 @@
 # testcases
 dataset/tc/
 dataset/beforeknn/
-Preprocessing/__pycache__/preprocessing.cpython-39.pyc
+Preprocessing/__pycache__/
 speed_classification/road_sign_dataset/
