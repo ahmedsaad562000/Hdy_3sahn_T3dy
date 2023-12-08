@@ -5,9 +5,4 @@
 dataset/tc/
 dataset/beforeknn/
 Preprocessing/__pycache__/preprocessing.cpython-39.pyc
-<<<<<<< HEAD
 speed_classification/road_sign_dataset/
-=======
-/speed_classification/road_sign_dataset
-
->>>>>>> a6c3f3897bdc72406abc7197611b9365a38302de
