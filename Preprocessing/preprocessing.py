@@ -131,7 +131,8 @@ def apply_gamma_correction(img, c, is_dark):
 
 def Gamma_Correction(img, c):
     hist = calculate_histogram(img)
-    is_dark = is_image_dark(hist)
+    # is_dark = is_image_dark(hist)
+    is_dark = True
     edited_img = apply_gamma_correction(img, c, is_dark)
     return edited_img
 

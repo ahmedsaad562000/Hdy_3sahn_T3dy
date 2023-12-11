@@ -8,7 +8,7 @@ import numpy as np
 def read_images(filepath):
 
     # # read images
-    for i in range(9,21):
+    for i in range(16,17):
 
         img = io.imread(filepath + "/{}.png".format(i))
         # resize image
