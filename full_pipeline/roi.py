@@ -88,8 +88,11 @@ def extract_roi(edge_image, colored_image):
         # Create the unsharp image by subtracting the Gaussian blur
         unsharp_image = cv2.addWeighted(sub_image, 1.5, gauss, -0.5, 0, sub_image)
 
+        # resize the image
+        resized_image = cv2.resize(unsharp_image, (128,128))
+
         # Store extracted ROI information
-        extracted_rois.append(unsharp_image)
+        extracted_rois.append(resized_image)
 
   # Return the list of extracted ROIs
   return extracted_rois

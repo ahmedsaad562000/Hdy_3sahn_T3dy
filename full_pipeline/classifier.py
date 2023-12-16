@@ -1,4 +1,4 @@
-from libs import np , cv2 , io , os , sys
+from libs import cv2 , io , os
 from sklearn.neighbors import KNeighborsClassifier
 from skimage.feature import hog
 from sklearn import metrics
@@ -6,7 +6,9 @@ import matplotlib.pyplot as plt
 import cv2
 from sklearn.svm import SVC
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.tree import DecisionTreeClassifier
+from preprocessing import gray_image , HistogramEqualization
+
+import pickle
 
 
 
@@ -35,7 +37,8 @@ class H3T_Classifier():
             for speed_img in os.listdir(speed_folder):
                 image = io.imread(os.path.join(speed_folder, speed_img))
                 resized_img = cv2.resize(image, (128, 128))
-                feature_vector, _ = hog(resized_img, visualize=True, channel_axis=2)
+                gray = gray_image(resized_img)
+                feature_vector, _ = hog(gray, visualize=True)
                 speed_feature_vector[speed].append(feature_vector)
                 self.training_dataset_labels.append(speed)
         self.training_dataset = [feature for speed_list in speed_feature_vector.values() for feature in speed_list]
@@ -50,7 +53,8 @@ class H3T_Classifier():
                 
                 image = io.imread(os.path.join(speed_folder, speed_img))
                 resized_img = cv2.resize(image, (128, 128))
-                feature_vector, _ = hog(resized_img, visualize=True, channel_axis=2)
+                gray = gray_image(resized_img)
+                feature_vector, _ = hog(gray, visualize=True)
                 self.test_features.append(feature_vector)
                 self.test_labels.append(speed)
 
@@ -70,5 +74,5 @@ class H3T_Classifier():
         print(accuracy)
 
     def predict(self, img_to_predict):
-        feature_vector , _ = hog(img_to_predict , visualize = True , channel_axis = 2)
+        feature_vector , _ = hog(img_to_predict , visualize = True)
         return self.classifier.predict([feature_vector])
