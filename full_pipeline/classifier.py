@@ -26,6 +26,8 @@ class H3T_Classifier():
 
     #Classifiers
     classifier = None
+
+    trained_model_file_path = "trained_model.pk1"
     
     def __init__(self):
         self.speeds = ['30' , '50' , '60' , '70' , '80' , '100' , '120']
@@ -72,6 +74,20 @@ class H3T_Classifier():
         self.classifier.predict(self.test_features)
         accuracy = self.classifier.score(self.test_features , self.test_labels)
         print(accuracy)
+
+    def save_trained_model(self):
+        #delete file contents in trained_model.pk1
+        open(self.trained_model_file_path , 'w').close()
+        
+        # save the model to disk
+        with open(self.trained_model_file_path , 'wb') as file:
+            pickle.dump(self.classifier , file)
+    
+    def load_trained_model(self):
+        # load the model from disk
+        with open(self.trained_model_file_path , 'rb') as file:
+            self.classifier = pickle.load(file)
+
 
     def predict(self, img_to_predict):
         feature_vector , _ = hog(img_to_predict , visualize = True)
