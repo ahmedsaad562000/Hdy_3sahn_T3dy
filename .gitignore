@@ -2,7 +2,9 @@
 .vscode/
 
 # testcases
-dataset/tc/
-dataset/beforeknn/
+dataset/
 Preprocessing/__pycache__/
+full_pipeline/__pycache__/
 speed_classification/road_sign_dataset/
+
+#
