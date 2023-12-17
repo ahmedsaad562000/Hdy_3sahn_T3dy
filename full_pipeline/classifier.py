@@ -38,9 +38,9 @@ class H3T_Classifier():
             speed_folder = f'{training_directory}/speed_{speed}/'
             for speed_img in os.listdir(speed_folder):
                 image = io.imread(os.path.join(speed_folder, speed_img))
-                resized_img = cv2.resize(image, (128, 128))
-                gray = gray_image(resized_img)
-                feature_vector, _ = hog(gray, visualize=True)
+                gray = gray_image(image)
+                resized_img = cv2.resize(gray, (128, 128))
+                feature_vector, _ = hog(resized_img, visualize=True)
                 speed_feature_vector[speed].append(feature_vector)
                 self.training_dataset_labels.append(speed)
         self.training_dataset = [feature for speed_list in speed_feature_vector.values() for feature in speed_list]
@@ -90,5 +90,6 @@ class H3T_Classifier():
 
 
     def predict(self, img_to_predict):
+        print(img_to_predict.shape)
         feature_vector , _ = hog(img_to_predict , visualize = True)
         return self.classifier.predict([feature_vector])
