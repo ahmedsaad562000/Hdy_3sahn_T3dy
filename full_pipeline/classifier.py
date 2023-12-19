@@ -38,9 +38,9 @@ class H3T_Classifier():
             speed_folder = f'{training_directory}/speed_{speed}/'
             for speed_img in os.listdir(speed_folder):
                 image = io.imread(os.path.join(speed_folder, speed_img))
-                gray = gray_image(image)
-                resized_img = cv2.resize(gray, (128, 128))
-                feature_vector, _ = hog(resized_img, visualize=True)
+                resized_img = cv2.resize(image, (128, 128))
+                # gray = gray_image(resized_img)
+                feature_vector = hog(resized_img, channel_axis=2 , pixels_per_cell=(8 , 8), cells_per_block=(4, 4) , transform_sqrt=True)
                 speed_feature_vector[speed].append(feature_vector)
                 self.training_dataset_labels.append(speed)
         self.training_dataset = [feature for speed_list in speed_feature_vector.values() for feature in speed_list]
@@ -56,7 +56,7 @@ class H3T_Classifier():
                 image = io.imread(os.path.join(speed_folder, speed_img))
                 resized_img = cv2.resize(image, (128, 128))
                 gray = gray_image(resized_img)
-                feature_vector, _ = hog(gray, visualize=True)
+                feature_vector , _ = hog(gray,pixels_per_cell=(4 , 4) , transform_sqrt=True)
                 self.test_features.append(feature_vector)
                 self.test_labels.append(speed)
 
@@ -64,7 +64,7 @@ class H3T_Classifier():
         if (mode == "knn"):
             self.classifier = KNeighborsClassifier(n_neighbors = 20)
         elif (mode == "svm"):
-            self.classifier = SVC(kernel = "linear" , random_state = 0)
+            self.classifier = SVC(kernel = 'rbf')
         elif (mode == "rf"):
             self.classifier = RandomForestClassifier(n_estimators = 100 , criterion = 'entropy' , random_state = 0)
             
@@ -90,6 +90,5 @@ class H3T_Classifier():
 
 
     def predict(self, img_to_predict):
-        print(img_to_predict.shape)
-        feature_vector , _ = hog(img_to_predict , visualize = True)
+        feature_vector= hog(img_to_predict, channel_axis=2 , pixels_per_cell=(8 , 8), cells_per_block=(4 , 4) , transform_sqrt=True)
         return self.classifier.predict([feature_vector])
