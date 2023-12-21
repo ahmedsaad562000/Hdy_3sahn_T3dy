@@ -8,5 +8,6 @@ full_pipeline/__pycache__/
 speed_classification/road_sign_dataset/
 speed_classification/trained_model.pk1
 /test
+speed_classification/numbers_dataset/training_set/
 # model
 *.pk1
