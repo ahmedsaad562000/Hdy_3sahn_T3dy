@@ -1,4 +1,3 @@
-import re
 from libs import cv2 , os
 
 def extract_frames(video_path, output_folder, fps=30):
@@ -16,6 +15,7 @@ def extract_frames(video_path, output_folder, fps=30):
 
     # Open the video file
     cap = cv2.VideoCapture(video_path)
+    print("A7a")
     if not cap.isOpened():
         print("Error: Couldn't open the video file.")
         return
@@ -25,6 +25,8 @@ def extract_frames(video_path, output_folder, fps=30):
     while True:
         ret, frame = cap.read()
 
+        print(ret)
+
         # Break the loop if no more frames available
         if not ret:
             break
@@ -33,6 +35,7 @@ def extract_frames(video_path, output_folder, fps=30):
         if frame_count % fps == 0:
             frame_path = f"{output_folder}/frame_{frame_count}.jpg"
             cv2.imwrite(frame_path, frame)
+            print(f"Frame {frame_count} saved to {frame_path}")
             frames.append(frame)
 
         frame_count += 1
