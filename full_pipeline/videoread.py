@@ -15,7 +15,6 @@ def extract_frames(video_path, output_folder, fps=30):
 
     # Open the video file
     cap = cv2.VideoCapture(video_path)
-    print("A7a")
     if not cap.isOpened():
         print("Error: Couldn't open the video file.")
         return
@@ -24,8 +23,6 @@ def extract_frames(video_path, output_folder, fps=30):
     frames = []
     while True:
         ret, frame = cap.read()
-
-        print(ret)
 
         # Break the loop if no more frames available
         if not ret:
