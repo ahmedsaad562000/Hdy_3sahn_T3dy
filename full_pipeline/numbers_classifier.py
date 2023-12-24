@@ -7,6 +7,7 @@ import cv2
 from sklearn.svm import SVC
 from sklearn.ensemble import RandomForestClassifier
 from preprocessing import gray_image , HistogramEqualization
+from scipy.io import loadmat
 
 import pickle
 
@@ -35,7 +36,7 @@ class H3T_Numbers_Classifier():
             for digit_img in os.listdir(digit_folder):
                 image = io.imread(os.path.join(digit_folder, digit_img))
                 resized_img = cv2.resize(image, (32, 32))
-                feature_vector = hog(resized_img , pixels_per_cell=(4 , 4), cells_per_block=(4, 4) , transform_sqrt=True)
+                feature_vector = hog(resized_img , pixels_per_cell=(4 , 4), cells_per_block=(4, 4))
                 digit_feature_vector[digit].append(feature_vector)
                 self.training_dataset_labels.append(digit)
             print(f'digit {digit} done')
@@ -55,12 +56,27 @@ class H3T_Numbers_Classifier():
     #             feature_vector , _ = hog(gray,pixels_per_cell=(4 , 4) , transform_sqrt=True)
     #             self.test_features.append(feature_vector)
     #             self.test_labels.append(digit)
+    
+    def load_dataset(self):
+        mnist = loadmat("../dataset/new_numbers/mnist-original.mat")
+        mnist_data = mnist["data"].T
+        mnist_label = mnist["label"][0]
+        self.training_dataset_labels = []
+        self.training_dataset = []
+
+        for i in range(len(mnist_data)):
+            # resized_img = cv2.resize(image, (32, 32))
+            image = mnist_data[i].reshape(28, 28)
+            feature_vector = hog(image , pixels_per_cell=(4 , 4), cells_per_block=(4, 4))
+            self.training_dataset_labels.append(mnist_label[i])
+            self.training_dataset.append(feature_vector)
+
 
     def train(self , mode : str):
         if (mode == "knn"):
-            self.classifier = KNeighborsClassifier(n_neighbors = 20)
+            self.classifier = KNeighborsClassifier(n_neighbors = 5000)
         elif (mode == "svm"):
-            self.classifier = SVC(kernel = 'rbf')
+            self.classifier = SVC(kernel = 'sigmoid')
         elif (mode == "rf"):
             self.classifier = RandomForestClassifier(n_estimators = 100 , criterion = 'entropy' , random_state = 0)
             
@@ -86,5 +102,5 @@ class H3T_Numbers_Classifier():
 
 
     def predict(self, img_to_predict):
-        feature_vector= hog(img_to_predict, pixels_per_cell=(4 , 4), cells_per_block=(4 , 4) , transform_sqrt=True)
+        feature_vector= hog(img_to_predict, pixels_per_cell=(4 , 4), cells_per_block=(4 , 4))
         return self.classifier.predict([feature_vector])
