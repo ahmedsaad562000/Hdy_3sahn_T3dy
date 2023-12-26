@@ -79,7 +79,7 @@ def detect_sign(rois : list , sign_imgs_corr : list):
 
     print(votes)
     
-    if (max(votes) >= 3  ):
+    if (max(votes) >= len(sign_imgs_corr) // 2 ):
         return votes.index(max(votes))
     else:
         return -1

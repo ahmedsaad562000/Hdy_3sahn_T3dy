@@ -13,10 +13,8 @@ app = Flask(__name__)
 # run a function once the server is up
 print("initializing")
 numbers_classifier = H3T_Numbers_Classifier()
-numbers_classifier.load_dataset()
 numbers_classifier.load_trained_model()
 print("model loaded")
-print("type", type(numbers_classifier))
 
 
 @app.route('/members')
