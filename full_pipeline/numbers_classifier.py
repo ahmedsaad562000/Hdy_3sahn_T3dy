@@ -8,6 +8,7 @@ from sklearn.svm import SVC
 from sklearn.ensemble import RandomForestClassifier
 from preprocessing import gray_image , HistogramEqualization
 from scipy.io import loadmat
+from skimage.filters import 
 
 import pickle
 
@@ -35,8 +36,15 @@ class H3T_Numbers_Classifier():
             digit_folder = f'{training_directory}/{digit}/'
             for digit_img in os.listdir(digit_folder):
                 image = io.imread(os.path.join(digit_folder, digit_img))
-                resized_img = cv2.resize(image, (32, 32))
-                feature_vector = hog(resized_img , pixels_per_cell=(4 , 4), cells_per_block=(4, 4))
+                resized_img = cv2.resize(image, (16, 32))
+                threshold = filters.threshold_otsu(resized_img)
+                print(threshold)
+                thresholded_image = np.zeros(resized_img.shape)
+                thresholded_image[resized_img  > threshold] = 1
+                
+                
+                
+                feature_vector = hog(resized_img , pixels_per_cell=(2, 4), cells_per_block=(2, 4))
                 digit_feature_vector[digit].append(feature_vector)
                 self.training_dataset_labels.append(digit)
             print(f'digit {digit} done')
@@ -76,7 +84,7 @@ class H3T_Numbers_Classifier():
         if (mode == "knn"):
             self.classifier = KNeighborsClassifier(n_neighbors = 5000)
         elif (mode == "svm"):
-            self.classifier = SVC(kernel = 'sigmoid')
+            self.classifier = SVC(kernel = 'rbf')
         elif (mode == "rf"):
             self.classifier = RandomForestClassifier(n_estimators = 100 , criterion = 'entropy' , random_state = 0)
             
@@ -102,5 +110,5 @@ class H3T_Numbers_Classifier():
 
 
     def predict(self, img_to_predict):
-        feature_vector= hog(img_to_predict, pixels_per_cell=(4 , 4), cells_per_block=(4 , 4))
+        feature_vector= hog(img_to_predict, pixels_per_cell=(2, 4), cells_per_block=(2 , 4))
         return self.classifier.predict([feature_vector])
