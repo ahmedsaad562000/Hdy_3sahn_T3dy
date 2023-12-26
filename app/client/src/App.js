@@ -98,14 +98,14 @@ function App() {
   }, []);
 
 
-useEffect(() => {
-  startInterval();
+// useEffect(() => {
+//   startInterval();
 
-  // Cleanup interval when component unmounts
-  return () => {
-    stopInterval();
-  };
-}, []);
+//   // Cleanup interval when component unmounts
+//   return () => {
+//     stopInterval();
+//   };
+// }, []);
 
   return (
     <div className="App">

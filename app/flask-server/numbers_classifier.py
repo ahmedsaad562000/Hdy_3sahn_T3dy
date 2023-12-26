@@ -1,6 +1,5 @@
 from libs import cv2 , io , os
 from sklearn.neighbors import KNeighborsClassifier
-from skimage.feature import hog
 from sklearn import metrics
 import matplotlib.pyplot as plt
 import cv2
@@ -8,6 +7,10 @@ from sklearn.svm import SVC
 from sklearn.ensemble import RandomForestClassifier
 from preprocessing import gray_image , HistogramEqualization
 from scipy.io import loadmat
+from skimage import filters
+import numpy as np
+from skimage.feature import hog
+
 
 import pickle
 
@@ -35,8 +38,16 @@ class H3T_Numbers_Classifier():
             digit_folder = f'{training_directory}/{digit}/'
             for digit_img in os.listdir(digit_folder):
                 image = io.imread(os.path.join(digit_folder, digit_img))
-                resized_img = cv2.resize(image, (32, 32))
-                feature_vector = hog(resized_img , pixels_per_cell=(4 , 4), cells_per_block=(4, 4))
+                resized_img = cv2.resize(image , (16, 32))
+                threshold = filters.threshold_otsu(resized_img)
+                thresholded_image = np.zeros(resized_img.shape)
+                thresholded_image[resized_img  > threshold] = 1
+                blurred_threshold_image = filters.gaussian(thresholded_image , sigma=0.7)
+                
+                
+                
+                
+                feature_vector = hog(blurred_threshold_image , pixels_per_cell=(2, 4), cells_per_block=(2, 4))
                 digit_feature_vector[digit].append(feature_vector)
                 self.training_dataset_labels.append(digit)
             print(f'digit {digit} done')
@@ -102,5 +113,5 @@ class H3T_Numbers_Classifier():
 
 
     def predict(self, img_to_predict):
-        feature_vector= hog(img_to_predict, pixels_per_cell=(4 , 4), cells_per_block=(4 , 4))
+        feature_vector= hog(img_to_predict, pixels_per_cell=(2, 4), cells_per_block=(2 , 4))
         return self.classifier.predict([feature_vector])

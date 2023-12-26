@@ -66,7 +66,7 @@ class H3T_Numbers_Classifier():
     #             self.test_labels.append(digit)
     
     def load_dataset(self):
-        mnist = loadmat("../dataset/new_numbers/mnist-original.mat")
+        mnist = loadmat("./dataset/new_numbers/mnist-original.mat")
         mnist_data = mnist["data"].T
         mnist_label = mnist["label"][0]
         self.training_dataset_labels = []
