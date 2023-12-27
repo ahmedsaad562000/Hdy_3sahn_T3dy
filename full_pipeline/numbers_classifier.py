@@ -8,7 +8,7 @@ from sklearn.svm import SVC
 from sklearn.ensemble import RandomForestClassifier
 from preprocessing import gray_image , HistogramEqualization
 from scipy.io import loadmat
-from skimage.filters import 
+from skimage import filters
 
 import pickle
 

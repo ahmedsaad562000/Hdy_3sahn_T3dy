@@ -13,6 +13,8 @@ def extract_frames(video_path, output_folder, fps=30):
     - None
     """
 
+    # filename 
+    filename = os.path.splitext(os.path.basename(video_path))[0]
     # Open the video file
     cap = cv2.VideoCapture(video_path)
     if not cap.isOpened():
@@ -30,7 +32,7 @@ def extract_frames(video_path, output_folder, fps=30):
 
         # Check if the current frame count is divisible by the desired FPS
         if frame_count % fps == 0:
-            frame_path = f"{output_folder}/frame_{frame_count}.jpg"
+            frame_path = f"{output_folder}/{filename}.jpg"
             cv2.imwrite(frame_path, frame)
             print(f"Frame {frame_count} saved to {frame_path}")
             frames.append(frame)

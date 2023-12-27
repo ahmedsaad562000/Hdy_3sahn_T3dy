@@ -1,5 +1,4 @@
-import cv2
-import numpy as np
+from libs import np , cv2 , threading
 import preprocessing as pp
 from skimage import filters
 import detection as detect
@@ -21,28 +20,34 @@ def getSpeed(photo,numbers_classifier):
         if (len(ROIs)  == 0):
             print("no rois")
         else:
-            print(f'number of rois is {len(ROIs)}')
             detected_image_index = detect.detect_sign(ROIs, sign_imgs_corr)
-            print(detected_image_index) 
             if detected_image_index != -1:
-                new_image = pp.gray_image(ROIs[detected_image_index])
+                # new_image = pp.gray_image(ROIs[detected_image_index])
 
-                kernel = np.ones((2,2), np.uint8)
-                new_image = cv2.erode(new_image, kernel, iterations=2)
-                new_image = cv2.dilate(new_image, kernel, iterations=1)
+                # kernel = np.ones((2,2), np.uint8)
+                # new_image = cv2.erode(new_image, kernel, iterations=2)
+                # new_image = cv2.dilate(new_image, kernel, iterations=1)
                 
-                cropped_img = new_image[ 30:100 , 25:61 ]
-                resized_img = cv2.resize(cropped_img, (16, 32))
+                # cropped_img = new_image[ 30:100 , 25:61 ]
+                # resized_img = cv2.resize(cropped_img, (16, 32))
 
-                threshold = filters.threshold_otsu(resized_img)
-                thresholded_image = np.zeros(resized_img.shape)
-                thresholded_image[resized_img  > threshold] = 1
+                # threshold = filters.threshold_otsu(resized_img)
+                # thresholded_image = np.zeros(resized_img.shape)
+                # thresholded_image[resized_img  > threshold] = 1
 
-                blurred_threshold_image = filters.gaussian(thresholded_image , sigma=0.7)
+                # blurred_threshold_image = filters.gaussian(thresholded_image , sigma=0.7)
 
-                predicted_sign = numbers_classifier.predict(blurred_threshold_image)[0]
-                predicted_sign_value = int(predicted_sign) * 10
-                print(f'predictedSignValue is {predicted_sign_value}')
+                # predicted_sign = numbers_classifier.predict(blurred_threshold_image)[0]
+                # predicted_sign_value = int(predicted_sign) * 10
+                # print(f'predictedSignValue is {predicted_sign_value}')
+
+
+
+                result = segement_numbers(ROIs[detected_image_index] , numbers_classifier)
+
+                if (result != None):
+                    print(f'speed Limit is {result}')
+                    predicted_sign_value = result
             else:
                 print("no sign detected")
 
@@ -62,3 +67,51 @@ def convert_image_to_nparray(photo):
     photo = np.fromstring(photo.read(), np.uint8)
     photo = cv2.imdecode(photo, cv2.IMREAD_COLOR)
     return photo
+
+def segement_numbers(image , numbers_classifier):
+
+    
+    V = cv2.cvtColor(image , cv2.COLOR_BGR2HSV)[: ,: , 2]
+    T = filters.threshold_local(V, 27, offset=10, method="gaussian")
+    thresh = (V > T).astype("uint8") * 255
+    thresh = cv2.bitwise_not(thresh)
+    inverted_thresh = cv2.bitwise_not(thresh)
+    
+    # to store the locations of the character candidates
+    charCandidates = []
+    cnts = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)[0]
+
+    # ensure at least one contour was found in the mask
+    contours_length = len(cnts)
+    if contours_length <3:
+        return None
+    
+    threads = []
+    for i in range(contours_length):
+        thread = threading.Thread(target=detect.process_contour, args=(cnts[i],thresh,charCandidates))
+        thread.start()
+        threads.append(thread)
+        
+    # Wait for all threads to finish
+    for thread in threads:
+        thread.join()
+        
+    imagess = []
+
+    charCandidateslen = len(charCandidates)
+    if (charCandidateslen < 2 or charCandidateslen > 3):
+        #print("wrong sign detected with length = " , len(charCandidates))
+        return None
+    
+    for i in range(charCandidateslen):
+        new_image = inverted_thresh[charCandidates[i][1]:charCandidates[i][1]+charCandidates[i][3] , charCandidates[i][0]:charCandidates[i][0]+charCandidates[i][2]]
+        new_image = cv2.resize(new_image, (16, 32))
+        prediction = numbers_classifier.predict(new_image)
+        imagess.append((charCandidates[i][0] , prediction[0].astype(int)))
+    
+    #sort by the x coordinate
+    imagess.sort(key=lambda x: -x[0])
+    
+    result = np.sum([imagess[i][1]*(10**i) for i in range(len(imagess))])
+        
+    return result

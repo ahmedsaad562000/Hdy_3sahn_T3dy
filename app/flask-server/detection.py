@@ -50,8 +50,7 @@ def detect_sign(rois : list , sign_imgs_corr : list):
     def add_vote(index):
         scores_list = [ np.sum(np.sum(np.abs(rois_corr[j] - sign_imgs_corr[index])))/(128*128*3*3) for j in range(len(rois))]
         most_correlated_index = np.argmin(scores_list)
-        print(scores_list[most_correlated_index])
-        if (scores_list[most_correlated_index] < 0.45):
+        if (scores_list[most_correlated_index] < 0.35):
             votes[most_correlated_index] += 1
     
     
@@ -76,11 +75,31 @@ def detect_sign(rois : list , sign_imgs_corr : list):
     
     for t in threads:
         t.join()
-
-    print(votes)
     
     if (max(votes) >= len(sign_imgs_corr) // 2 ):
         return votes.index(max(votes))
     else:
         return -1
+    
+
+
+def process_contour(contour, thresh , charCandidates):
+    boxX, boxY, boxW, boxH = cv2.boundingRect(contour)
+
+    # compute the aspect ratio, solidity, and height ratio for the component
+    aspectRatio = boxW / float(boxH)
+    solidity = cv2.contourArea(contour) / float(boxW * boxH)
+    heightRatio = boxH / float(thresh.shape[0])
+
+    #print(solidity)
+
+    # determine if the aspect ratio, solidity, and height of the contour pass
+    # the rules tests
+    keepAspectRatio = aspectRatio < 1.0
+    keepSolidity = solidity > 0.2
+    keepHeight = heightRatio > 0.3 and heightRatio < 0.95
+
+    # check to see if the component passes all the tests
+    if keepAspectRatio and keepSolidity and keepHeight:
+        charCandidates.append((boxX, boxY, boxW, boxH))
 

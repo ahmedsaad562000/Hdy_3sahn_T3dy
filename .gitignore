@@ -4,6 +4,7 @@
 # testcases
 dataset/
 Preprocessing/__pycache__/
+app/flask-server/__pycache__/
 full_pipeline/__pycache__/
 speed_classification/road_sign_dataset/
 speed_classification/trained_model.pk1
