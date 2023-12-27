@@ -7,6 +7,7 @@ from PIL import Image
 import numpy as np
 import cv2
 from numbers_classifier import H3T_Numbers_Classifier
+import json
 
 def init_number_classifier():
     print("initializing")
@@ -31,8 +32,14 @@ def upload_photo():
     
     photo = request.files['photo']
     speed = getSpeed(photo,classifier)
+    print("\033[91m {}\033[00m" .format(f"******************** speed ******************* = {speed}"))
 
-    return jsonify({'speed':speed})
+
+    json_serializable_object = int(speed)
+    json_data = json.dumps(json_serializable_object)
+
+    return json_data, 200
+
 
 if __name__ == '__main__':
     app.run(debug=True)
