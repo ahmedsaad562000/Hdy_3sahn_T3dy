@@ -10,18 +10,19 @@ function App() {
     facingMode: FACING_MODE_USER
   };
   const [selectedFile, setSelectedFile] = useState(null);
-  const [result, setResult] = useState(null);
-  const [screenshot, setScreenshot] = useState(null);
-  const [intervalId, setIntervalId] = useState(null);
+  const [intervalId, setIntervalId] = useState(100);
   const [ lengthROIs, setLengthROIs] = useState(null);
-  const [ stop, setStop] = useState(false);
   const [facingMode, setFacingMode] = React.useState(FACING_MODE_USER);
+
   const startInterval = () => {
-    const id = setInterval(capture, 2000); // Adjust the interval time as needed (5000 milliseconds = 5 seconds)
+    console.log('Starting interval...', intervalId);
+    const id = setInterval(capture, 500); // Adjust the interval time as needed (5000 milliseconds = 5 seconds)
+    console.log('Started interval', id);
     setIntervalId(id);
   };
 
   const stopInterval = () => {
+    console.log('Stopping interval...', intervalId);
     clearInterval(intervalId);
     setIntervalId(null);
   };
@@ -37,7 +38,6 @@ function App() {
     }
   }
 
-
   const handleUpload = () => {
     if (selectedFile) {
       const formData = new FormData();
@@ -50,21 +50,16 @@ function App() {
         .then(response => response.json())
         .then(data => {
           console.log('Upload successful', data);
-          setResult(data.result);
-          showNewSpeed(data.result)
-
-          // Handle success, if needed
+          showNewSpeed(data.speed)
         })
         .catch(error => {
           console.error('Error during upload', error);
-          // Handle error, if needed
         });
     }
   };
 
   const capture = useCallback(async () => {
     const imageSrc = webcamRef.current.getScreenshot();
-    setScreenshot(imageSrc);
     const blob = await fetch(imageSrc).then((res) => res.blob());
 
     const formData = new FormData();
@@ -77,14 +72,10 @@ function App() {
       .then(response => response.json())
       .then(data => {
         console.log('Upload successful', data);
-        setResult(data.result);
-        showNewSpeed(data.result)
-
-        // Handle success, if needed
+        showNewSpeed(data.speed)
       })
       .catch(error => {
         console.error('Error during upload', error);
-        // Handle error, if needed
       });
   }, [webcamRef]);
 
@@ -97,15 +88,12 @@ function App() {
     );
   }, []);
 
-
-// useEffect(() => {
-//   startInterval();
-
-//   // Cleanup interval when component unmounts
-//   return () => {
-//     stopInterval();
-//   };
-// }, []);
+  useEffect(() => {
+    startInterval();
+    return () => {
+      stopInterval();
+    };
+  }, []);
 
   return (
     <div className="App">
