@@ -50,7 +50,7 @@ def detect_sign(rois : list , sign_imgs_corr : list):
     def add_vote(index):
         scores_list = [ np.sum(np.sum(np.abs(rois_corr[j] - sign_imgs_corr[index])))/(128*128*3*3) for j in range(len(rois))]
         most_correlated_index = np.argmin(scores_list)
-        if (scores_list[most_correlated_index] < 0.35):
+        if (scores_list[most_correlated_index] < 0.45):
             votes[most_correlated_index] += 1
     
     
@@ -83,7 +83,43 @@ def detect_sign(rois : list , sign_imgs_corr : list):
     
 
 
-def process_contour(contour, thresh , charCandidates):
+# def process_contour(contour, thresh , charCandidates):
+#     boxX, boxY, boxW, boxH = cv2.boundingRect(contour)
+#     # compute the aspect ratio, solidity, and height ratio for the component
+#     aspectRatio = boxW / float(boxH)
+#     solidity = cv2.contourArea(contour) / float(boxW * boxH)
+#     heightRatio = boxH / float(thresh.shape[0])
+
+#     #print(solidity)
+
+#     # determine if the aspect ratio, solidity, and height of the contour pass
+#     # the rules tests
+#     keepAspectRatio = aspectRatio < 1.0
+#     keepSolidity = solidity > 0.2
+#     keepHeight = heightRatio > 0.3 and heightRatio < 0.95
+
+#     # check to see if the component passes all the tests
+#     if keepAspectRatio and keepSolidity and keepHeight:
+#         charCandidates.append((boxX, boxY, boxW, boxH))
+    
+
+
+
+
+def process_label(labels , label, thresh , charCandidates):
+    # if this is the background label, ignore it
+    if label == 0:
+        return
+
+    # otherwise, construct the label mask to display only connected components for the
+    # current label, then find contours in the label mask
+    labelMask = np.zeros(thresh.shape, dtype="uint8")
+    labelMask[labels == label] = 255
+
+
+    cnts = cv2.findContours(labelMask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)[0]
+
+    contour = max(cnts, key=cv2.contourArea)
     boxX, boxY, boxW, boxH = cv2.boundingRect(contour)
 
     # compute the aspect ratio, solidity, and height ratio for the component
