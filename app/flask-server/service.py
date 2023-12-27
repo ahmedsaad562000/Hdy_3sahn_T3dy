@@ -85,7 +85,7 @@ def segement_numbers(image , numbers_classifier):
     labels = measure.label(thresh, background=0)
     threads = []
     for label in np.unique(labels):
-        thread = threading.Thread(target=process_label, args=(labels , label, thresh , charCandidates))
+        thread = threading.Thread(target=detect.process_label, args=(labels , label, thresh , charCandidates))
         thread.start()
         threads.append(thread)
      

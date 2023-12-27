@@ -93,9 +93,10 @@ class H3T_Numbers_Classifier():
         with open(self.trained_model_file_path , 'wb') as file:
             pickle.dump(self.classifier , file)
     
-    def load_trained_model(self):
+    def load_trained_model(self , trained_model_file_path = None):
         # load the model from disk
-        with open(self.trained_model_file_path , 'rb') as file:
+        path  = trained_model_file_path if trained_model_file_path else self.trained_model_file_path
+        with open(path , 'rb') as file:
             self.classifier = pickle.load(file)
 
 

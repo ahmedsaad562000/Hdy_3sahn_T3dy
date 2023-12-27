@@ -9,7 +9,7 @@ def extract_roi(edge_image, colored_image):
     extracted_rois = []
 
     # Minimum area threshold to avoid small objects and retrieve only potential ROIs
-    min_area = 1000
+    min_area = 500
 
     # Create a list to hold the threads
     threads = []
