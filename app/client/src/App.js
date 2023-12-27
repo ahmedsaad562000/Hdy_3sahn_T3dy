@@ -88,12 +88,12 @@ function App() {
     );
   }, []);
 
-  useEffect(() => {
-    startInterval();
-    return () => {
-      stopInterval();
-    };
-  }, []);
+  // useEffect(() => {
+  //   startInterval();
+  //   return () => {
+  //     stopInterval();
+  //   };
+  // }, []);
 
   return (
     <div className="App">

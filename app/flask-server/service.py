@@ -48,6 +48,8 @@ def getSpeed(photo,numbers_classifier):
                 if (result != None):
                     print(f'speed Limit is {result}')
                     predicted_sign_value = result
+                else: 
+                    print("no sign detected 2")
             else:
                 print("no sign detected")
 
@@ -75,15 +77,17 @@ def segement_numbers(image , numbers_classifier):
     T = filters.threshold_local(V, 27, offset=10, method="gaussian")
     thresh = (V > T).astype("uint8") * 255
     thresh = cv2.bitwise_not(thresh)
+    cv2.imwrite("thresssss.jpg", thresh)
     inverted_thresh = cv2.bitwise_not(thresh)
     
     # to store the locations of the character candidates
     charCandidates = []
-    cnts = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)[0]
+    cnts = cv2.findContours(thresh, cv2.RETR_CCOMP, cv2.CHAIN_APPROX_SIMPLE)[0]
 
     # ensure at least one contour was found in the mask
     contours_length = len(cnts)
     if contours_length <3:
+        print("less than 3")
         return None
     
     threads = []
@@ -100,7 +104,7 @@ def segement_numbers(image , numbers_classifier):
 
     charCandidateslen = len(charCandidates)
     if (charCandidateslen < 2 or charCandidateslen > 3):
-        #print("wrong sign detected with length = " , len(charCandidates))
+        print("wrong sign detected with length = " , len(charCandidates))
         return None
     
     for i in range(charCandidateslen):
