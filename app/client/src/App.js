@@ -5,18 +5,18 @@ function App() {
   const webcamRef = useRef(null);
   const FACING_MODE_USER = "user";
   const FACING_MODE_ENVIRONMENT = "environment";
-  
+
   const videoConstraints = {
     facingMode: FACING_MODE_USER
   };
   const [selectedFile, setSelectedFile] = useState(null);
   const [intervalId, setIntervalId] = useState(100);
-  const [ lengthROIs, setLengthROIs] = useState(null);
+  const [lengthROIs, setLengthROIs] = useState(null);
   const [facingMode, setFacingMode] = React.useState(FACING_MODE_USER);
 
   const startInterval = () => {
     console.log('Starting interval...', intervalId);
-    const id = setInterval(capture, 500); // Adjust the interval time as needed (5000 milliseconds = 5 seconds)
+    const id = setInterval(capture, 1000); // Adjust the interval time as needed (5000 milliseconds = 5 seconds)
     console.log('Started interval', id);
     setIntervalId(id);
   };
@@ -33,7 +33,7 @@ function App() {
   };
 
   const showNewSpeed = (speed) => {
-    if (speed!=0) {
+    if (speed != 0) {
       setLengthROIs(speed);
     }
   }
@@ -50,7 +50,7 @@ function App() {
         .then(response => response.json())
         .then(data => {
           console.log('Upload successful', data);
-          showNewSpeed(data.speed)
+          showNewSpeed(data)
         })
         .catch(error => {
           console.error('Error during upload', error);
@@ -72,7 +72,7 @@ function App() {
       .then(response => response.json())
       .then(data => {
         console.log('Upload successful', data);
-        showNewSpeed(data.speed)
+        showNewSpeed(data)
       })
       .catch(error => {
         console.error('Error during upload', error);
@@ -88,12 +88,12 @@ function App() {
     );
   }, []);
 
-  // useEffect(() => {
-  //   startInterval();
-  //   return () => {
-  //     stopInterval();
-  //   };
-  // }, []);
+  useEffect(() => {
+    startInterval();
+    return () => {
+      stopInterval();
+    };
+  }, []);
 
   return (
     <div className="App">
@@ -119,22 +119,18 @@ function App() {
               ref={webcamRef}
               screenshotFormat="image/jpeg"
               videoConstraints={{
-          ...videoConstraints,
-          facingMode
-        }} />
+                ...videoConstraints,
+                facingMode
+              }} />
           </div>
-          <h1 className='text-white text-6xl font-bold'>Current Speed Is</h1>
-          <h1 className='text-white text-8xl font-extrabold'>{lengthROIs}</h1>
-          <button onClick={capture} type="button" class="text-white my-20 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2  dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
+          <h1 className='text-white text-4xl font-bold my-4'>Current Speed Is</h1>
+          <h1 className='text-white text-6xl font-extrabold text-green-500'>{lengthROIs}</h1>
+          <button onClick={capture} type="button" class="text-white my-10 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2  dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
             Capture Photo</button>
-            <button onClick={stopInterval} type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
-              Stop</button>
-              <button onClick={handleSwitch}>Switch camera</button>
-
-            <div className=" justify-center flex">
-
-          {/* {screenshot && <img src={screenshot} alt="Captured Screenshot" />} */}
-</div>
+          <button onClick={handleSwitch} type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
+            Switch camera</button>
+          <div className=" justify-center flex">
+          </div>
 
 
         </div>
