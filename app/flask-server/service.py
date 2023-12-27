@@ -1,6 +1,6 @@
 from libs import np , cv2 , threading
 import preprocessing as pp
-from skimage import filters
+from skimage import filters , measure
 import detection as detect
 import roi as roi
 
@@ -70,36 +70,32 @@ def convert_image_to_nparray(photo):
     photo = cv2.imdecode(photo, cv2.IMREAD_COLOR)
     return photo
 
-def segement_numbers(image , numbers_classifier):
 
-    
+
+
+
+def segement_numbers(image , numbers_classifier):
     V = cv2.cvtColor(image , cv2.COLOR_BGR2HSV)[: ,: , 2]
-    T = filters.threshold_local(V, 27, offset=10, method="gaussian")
+    T = filters.threshold_local(V, 27, offset=5, method="gaussian")
     thresh = (V > T).astype("uint8") * 255
     thresh = cv2.bitwise_not(thresh)
     cv2.imwrite("thresssss.jpg", thresh)
     inverted_thresh = cv2.bitwise_not(thresh)
-    
-    # to store the locations of the character candidates
+    pp.show_images([image , thresh])
+    # perform a connected components analysis and initialize the mask to store the locations
+    # of the character candidates
     charCandidates = []
-    cnts = cv2.findContours(thresh, cv2.RETR_CCOMP, cv2.CHAIN_APPROX_SIMPLE)[0]
-
-    # ensure at least one contour was found in the mask
-    contours_length = len(cnts)
-    if contours_length <3:
-        print("less than 3")
-        return None
-    
+    labels = measure.label(thresh, background=0)
     threads = []
-    for i in range(contours_length):
-        thread = threading.Thread(target=detect.process_contour, args=(cnts[i],thresh,charCandidates))
+    for label in np.unique(labels):
+        thread = threading.Thread(target=process_label, args=(labels , label, thresh , charCandidates))
         thread.start()
         threads.append(thread)
-        
+     
     # Wait for all threads to finish
     for thread in threads:
         thread.join()
-        
+            
     imagess = []
 
     charCandidateslen = len(charCandidates)
@@ -110,6 +106,7 @@ def segement_numbers(image , numbers_classifier):
     for i in range(charCandidateslen):
         new_image = inverted_thresh[charCandidates[i][1]:charCandidates[i][1]+charCandidates[i][3] , charCandidates[i][0]:charCandidates[i][0]+charCandidates[i][2]]
         new_image = cv2.resize(new_image, (16, 32))
+        pp.show_images([new_image], [f"new_image {i}"])
         prediction = numbers_classifier.predict(new_image)
         imagess.append((charCandidates[i][0] , prediction[0].astype(int)))
     
@@ -119,3 +116,52 @@ def segement_numbers(image , numbers_classifier):
     result = np.sum([imagess[i][1]*(10**i) for i in range(len(imagess))])
         
     return result
+
+
+# def segement_numbers(image , numbers_classifier):
+
+    
+#     V = cv2.cvtColor(image , cv2.COLOR_BGR2HSV)[: ,: , 2]
+#     T = filters.threshold_local(V, 27, offset=10, method="gaussian")
+#     thresh = (V > T).astype("uint8") * 255
+#     thresh = cv2.bitwise_not(thresh)
+#     inverted_thresh = cv2.bitwise_not(thresh)
+    
+#     # to store the locations of the character candidates
+#     charCandidates = []
+#     cnts = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)[0]
+
+#     # ensure at least one contour was found in the mask
+#     contours_length = len(cnts)
+#     if contours_length <3:
+#         return None
+    
+#     threads = []
+#     for i in range(contours_length):
+#         thread = threading.Thread(target=detect.process_contour, args=(cnts[i],thresh,charCandidates))
+#         thread.start()
+#         threads.append(thread)
+        
+#     # Wait for all threads to finish
+#     for thread in threads:
+#         thread.join()
+        
+#     imagess = []
+
+#     charCandidateslen = len(charCandidates)
+#     if (charCandidateslen < 2 or charCandidateslen > 3):
+#         #print("wrong sign detected with length = " , len(charCandidates))
+#         return None
+    
+#     for i in range(charCandidateslen):
+#         new_image = inverted_thresh[charCandidates[i][1]:charCandidates[i][1]+charCandidates[i][3] , charCandidates[i][0]:charCandidates[i][0]+charCandidates[i][2]]
+#         new_image = cv2.resize(new_image, (16, 32))
+#         prediction = numbers_classifier.predict(new_image)
+#         imagess.append((charCandidates[i][0] , prediction[0].astype(int)))
+    
+#     #sort by the x coordinate
+#     imagess.sort(key=lambda x: -x[0])
+    
+#     result = np.sum([imagess[i][1]*(10**i) for i in range(len(imagess))])
+        
+#     return result
