@@ -3,12 +3,12 @@
 ## INTRODUCTION (Project Idea and Need)
 The application is designed to scan the road using a mobile camera, identify speed road signs, and alert the driver about them.
 
-<img src = "road_sign.png" width = "300" img/>
+<img src = "images\road_sign.png" width = "300" img/>
 
 
 ## Block Diagram
 
-<img src = "block_diagram.png" height = "200" img/>
+<img src = "images\block_diagram.png" height = "200" img/>
 
 
 ## Block Explanation
@@ -37,7 +37,7 @@ Then using connected components labeling and analysis we select contours with fo
 
 ### Classification
 #### Dataset used to train a classifier: <a href="https://www.kaggle.com/datasets/preatcher/standard-fonts-digit-dataset-09" >  Standard Fonts Digit Dataset (0-9) </a>     
-Classification is done by the following steps:
+Classification using <strong>SVM with RBF Kernel</strong> is done by the following steps:
 
 - Applying resizing for each image to (16x32).
 - Extract HOG feature.
@@ -47,13 +47,39 @@ Classification is done by the following steps:
 ### Web-Server
 A React.js Implemented web-server that is connected to sign recognition code where it takes captured image, video or real time video from camera then sends the input to recognition code and receives its output and notify the user with the speed limit.
 
+<img src = "images\web_server.png" width = "720" img/>
 
-## Initialization
+## Setup & Initialization
 
+### Run Backend Server
+- Create a virtual environemnt
+    ```bash
+    python -m venv /path/to/new/virtual/environment
+    ``````
+- Activate your virtual environemnt by runnning
+    ```bash
+    /path/to/new/virtual/environment/activate.bat
+    ``````
+- use pip or any package manager to install requirements.txt file
+    ```bash
+    pip install -r requirements.txt
+    ``````
+- Run flask app 
+    ```bash
+    flask --app app/flask-server/server run
+    ``````
 
+### Run frontend Server
+```bash
+cd app/client
+npm install
+npm start
+``````
 
 ## Papers & References:
 - <a href= "https://www.sciencedirect.com/science/article/pii/S1474667016416009"> Traffic sign recognition application based on image processing techniques - ScienceDirect </a>
+
+- <a href= "https://pyimagesearch.com/2020/09/21/opencv-automatic-license-number-plate-recognition-anpr-with-python/"> OpenCV: Automatic License/Number Plate Recognition (ANPR) with Python </a>
 
 - <a href= "https://towardsdatascience.com/scanned-digits-recognition-using-k-nearest-neighbor-k-nn-d1a1528f0dea">Scanned Numbers Recognition using k-Nearest Neighbor (k-NN) | by Hussein Moghnieh, Ph.D. | Towards Data Science </a>
 
