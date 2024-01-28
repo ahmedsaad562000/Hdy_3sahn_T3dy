@@ -64,7 +64,6 @@ def segement_numbers(image , numbers_classifier):
     T = filters.threshold_local(V, 27, offset=5, method="gaussian")
     thresh = (V > T).astype("uint8") * 255
     thresh = cv2.bitwise_not(thresh)
-    cv2.imwrite("thresssss.jpg", thresh)
     inverted_thresh = cv2.bitwise_not(thresh)
     # pp.show_images([image , thresh])
     # perform a connected components analysis and initialize the mask to store the locations
